@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31624.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "auto_mining_platform_2", "auto_mining_platform_2\auto_mining_platform_2.csproj", "{79569A12-9672-4F69-8D89-A099DC4C9F86}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{79569A12-9672-4F69-8D89-A099DC4C9F86}.Debug|x64.ActiveCfg = Debug|x64
+		{79569A12-9672-4F69-8D89-A099DC4C9F86}.Debug|x64.Build.0 = Debug|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9013F522-AD6D-4960-A54A-8F093495F76F}
+	EndGlobalSection
+EndGlobal
