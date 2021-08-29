@@ -20,22 +20,18 @@ using VRageMath;
 
 namespace IngameScript
 {
-    partial class Program : MyGridProgram
+    partial class Program
     {
-
-        public Program()
+        /// <summary>
+        /// Extension of <c>PlayerConfig</c>
+        /// Contains aLl config settings for the script.
+        /// </summary>
+        public class ScriptConfig : PlayerConfig
         {
+            public ScriptConfig(IMessageQueueAppender debugQueue) : base(debugQueue)
+            {
 
-        }
-
-        public void Save()
-        {
-
-        }
-
-        public void Main(string argument, UpdateType updateSource)
-        {
-
+            }
         }
     }
 }

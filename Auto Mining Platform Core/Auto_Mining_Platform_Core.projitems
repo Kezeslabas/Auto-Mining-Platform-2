@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>61eba249-19f3-48b6-a25b-a4cee90168ba</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>IngameScript</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Blocks\BlockManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Config\ConfigBuilder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Config\ConfigInitializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Config\PlayerConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Config\ScriptConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\MessageQueue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\ScreenMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\StatusInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ScreenManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Util\TriggeredState.cs" />
+  </ItemGroup>
+</Project>
