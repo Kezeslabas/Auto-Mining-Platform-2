@@ -9,7 +9,7 @@
     <MDKUseGameBinPath>yes</MDKUseGameBinPath>
     <MDKGameBinPath>D:\Games\SteamLibrary\steamapps\common\SpaceEngineers\Bin64</MDKGameBinPath>
     <MDKInstallPath>c:\users\geri-rog\appdata\local\microsoft\visualstudio\16.0_a5cde47b\extensions\rr4cvvzs.kvf</MDKInstallPath>
-    <MDKOutputPath>C:\Users\Geri-ROG\AppData\Roaming\SpaceEngineers\IngameScripts\local</MDKOutputPath>
+    <MDKOutputPath>D:\Geri\Codes\Space Engineers\mining_platform\Auto Mining Platform 2\Deploy</MDKOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Sandbox.Common">

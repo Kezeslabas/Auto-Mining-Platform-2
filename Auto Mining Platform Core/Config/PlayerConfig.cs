@@ -31,33 +31,56 @@ namespace IngameScript
 
             public PlayerConfig(IMessageQueueAppender debugQueue) : base(debugQueue)
             {
-
+                AllToDefault();
             }
 
             private readonly string MINIG_PLATFORM_CONFIGURATION = "Mining Platform Configuration";
 
             // Highlighted Values
             private readonly string HIGHLIGHTED_SETTINGS = "Highlighted Settings (Hard)";
-            public string MainTag = "/Mine 01/";
+            public string MainTag;
 
             // Soft Vales
             private readonly string DISPLAY_SETTINGS = "Display Settings (Soft)";
-            public bool ShowPlatformName = true;
-            public bool LcdColorCoding = true;
-            public bool UpdateDetailedInfo = true;
-            public bool ShowAdvancedData = false;
+            public bool ShowPlatformName;
+            public bool LcdColorCoding;
+            public bool UpdateDetailedInfo;
+            public bool ShowAdvancedData ;
 
             // Hard values
             private readonly string TAG_SETTINGS = "Tag Settings (Hard)";
-            public string VerTag = "/Ver/";
-            public string HorTag = "/Hor/";
-            public string InvTag = "/Inv/";
+            public string VerTag;
+            public string HorTag;
+            public string InvTag;
 
-            public string StartTimerTag = "/Start/";
-            public string PauseTimerTag = "/Pause/";
-            public string FinishTimerTag = "/Finish/";
-            public string AutoStartTimerTag = "/Auto-Start/";
-            public string AutoPauseTimerTag = "/Auto-Pause/";
+            public string StartTimerTag;
+            public string PauseTimerTag;
+            public string FinishTimerTag;
+            public string AutoStartTimerTag;
+            public string AutoPauseTimerTag;
+
+            public void AllToDefault()
+            {
+                // Highlighted Values
+                MainTag = "/Mine 01/";
+
+                // Soft Vales
+                ShowPlatformName = true;
+                LcdColorCoding = true;
+                UpdateDetailedInfo = true;
+                ShowAdvancedData = false;
+
+                // Hard values
+                VerTag = "/Ver/";
+                HorTag = "/Hor/";
+                InvTag = "/Inv/";
+
+                StartTimerTag = "/Start/";
+                PauseTimerTag = "/Pause/";
+                FinishTimerTag = "/Finish/";
+                AutoStartTimerTag = "/Auto-Start/";
+                AutoPauseTimerTag = "/Auto-Pause/";
+        }
 
             /// <summary>
             /// Load the values form the provided Custom Data.

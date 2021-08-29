@@ -30,17 +30,11 @@ namespace IngameScript
             void Append(string msg);
         }
 
-        public interface IMessageQueue : IMessageQueueAppender
-        {
-            void Clear();
-            string ConsumeAll();
-        }
-
         /// <summary>
         /// Stores Messages that can be consumed to create display information.
         /// Declare the name to use for the messages in the constructor.
         /// </summary>
-        public class MessageQueue : IMessageQueue
+        public class MessageQueue : IMessageQueueAppender
         {
             private readonly List<string> messages = new List<string>();
             private readonly string name;

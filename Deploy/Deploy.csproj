@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Auto Mining Platform 2\script.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Auto Mining Platform 2\script.cs" />
+  </ItemGroup>
+
+</Project>

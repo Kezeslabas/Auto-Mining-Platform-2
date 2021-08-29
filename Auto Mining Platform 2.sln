@@ -9,6 +9,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Auto Mining Platform Core",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auto Mining Platform Tests", "Auto Mining Platform Tests\Auto Mining Platform Tests.csproj", "{AEF6F821-BC01-47E8-BF2F-72F67B875819}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deploy", "Deploy\Deploy.csproj", "{FD7FB8F6-5631-4473-A811-955926882F61}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Auto Mining Platform Core\Auto_Mining_Platform_Core.projitems*{61eba249-19f3-48b6-a25b-a4cee90168ba}*SharedItemsImports = 13
@@ -37,6 +39,14 @@ Global
 		{AEF6F821-BC01-47E8-BF2F-72F67B875819}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AEF6F821-BC01-47E8-BF2F-72F67B875819}.Release|x64.ActiveCfg = Release|Any CPU
 		{AEF6F821-BC01-47E8-BF2F-72F67B875819}.Release|x64.Build.0 = Release|Any CPU
+		{FD7FB8F6-5631-4473-A811-955926882F61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD7FB8F6-5631-4473-A811-955926882F61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD7FB8F6-5631-4473-A811-955926882F61}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FD7FB8F6-5631-4473-A811-955926882F61}.Debug|x64.Build.0 = Debug|Any CPU
+		{FD7FB8F6-5631-4473-A811-955926882F61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD7FB8F6-5631-4473-A811-955926882F61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD7FB8F6-5631-4473-A811-955926882F61}.Release|x64.ActiveCfg = Release|Any CPU
+		{FD7FB8F6-5631-4473-A811-955926882F61}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
