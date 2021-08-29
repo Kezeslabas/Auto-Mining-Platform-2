@@ -25,22 +25,27 @@ namespace IngameScript
         /// <summary>
         /// Manages screens, that are added to it.
         /// </summary>
-        public class ScreenManager : IBlockConsumer
+        public class ScreenManager : IBlockConsumer, IStateConsumer
         {
             private readonly ScriptConfig config;
+            private readonly IStateProvider stateProvider;
 
             private readonly HashSet<IMyTextSurface> displays = new HashSet<IMyTextSurface>();
             
             private readonly IMyTextSurface coreDisplay;
 
             private readonly TriggeredState messageCycle = new TriggeredState();
-            private string currentMessage;
+            private readonly TriggeredState stateChange = new TriggeredState();
 
             private readonly IScreenMessage screenMessage;
+            
+            private string currentMessage;
 
-            public ScreenManager(ScriptConfig config, IScreenMessage screenMessage ,IMyTextSurface coreDisplay)
+            public ScreenManager(ScriptConfig config, IStateProvider stateProvider, IScreenMessage screenMessage ,IMyTextSurface coreDisplay)
             {
                 this.config = config;
+                this.stateProvider = stateProvider;
+
                 this.screenMessage = screenMessage;
                 this.coreDisplay = coreDisplay;
                 AddCoreDisplay();
@@ -53,12 +58,24 @@ namespace IngameScript
             {
                 CurrentMessage();
 
-                foreach (IMyTextSurface surface in displays)
+                if (stateChange.IsTriggered())
                 {
-                    surface.WriteText(currentMessage);
+                    foreach (IMyTextSurface surface in displays)
+                    {
+                        SetDisplayColor(surface);
+                        surface.WriteText(currentMessage);
+                    }
+                }
+                else
+                {
+                    foreach (IMyTextSurface surface in displays)
+                    {
+                        surface.WriteText(currentMessage);
+                    }
                 }
 
                 messageCycle.Continue();
+                stateChange.Continue();
             }
 
             /// <summary>
@@ -71,7 +88,7 @@ namespace IngameScript
             {
                 if (messageCycle.IsTriggered()) return currentMessage;
 
-                currentMessage = screenMessage.BuildMessage();
+                currentMessage = screenMessage.BuildMessage(stateProvider.GetState());
 
                 messageCycle.Trigger();
                 return currentMessage;
@@ -116,7 +133,10 @@ namespace IngameScript
 
             private void SetDisplayColor(IMyTextSurface textSurface)
             {
-                return;
+                if (config.LcdColorCoding)
+                {
+                    textSurface.FontColor = config.STATEDATA[stateProvider.GetState()].Color;
+                }
             }
 
             /// <summary>
@@ -172,6 +192,11 @@ namespace IngameScript
                 textSurface.ContentType = ContentType.TEXT_AND_IMAGE;
                 SetDisplayColor(textSurface);
                 displays.Add(textSurface);
+            }
+
+            public void ConsumeState(ScriptState state)
+            {
+                stateChange.Trigger();
             }
         }
     }

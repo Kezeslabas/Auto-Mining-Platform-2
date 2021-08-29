@@ -22,26 +22,33 @@ namespace IngameScript
 {
     partial class Program
     {
+        public interface IOverview
+        {
+            string BuildOverview();
+        }
         public interface IScreenMessage
         {
             IMessageQueueAppender GetInfoQueueAppender();
             IMessageQueueAppender GetWarningQueueAppender();
-            string BuildMessage();
+            string BuildMessage(ScriptState state);
         }
         /// <summary>
         /// Maintains the information that can be displayed on Screens
         /// </summary>
         public class ScreenMessage : IScreenMessage
         {
+            private readonly ScriptConfig config;
+
             private readonly MessageQueue debugQueue;
-            private readonly StatusInfo statusBar = new StatusInfo();
+            private readonly IndicatorInfo indicatorBar = new IndicatorInfo();
 
             private readonly MessageQueue infoQueue = new MessageQueue("Info");
             private readonly MessageQueue warningQueue = new MessageQueue("Warning");
 
-            public ScreenMessage(MessageQueue debugQueue)
+            public ScreenMessage(MessageQueue debugQueue, ScriptConfig config)
             {
                 this.debugQueue = debugQueue;
+                this.config = config;
             }
 
             public IMessageQueueAppender GetInfoQueueAppender()
@@ -58,13 +65,16 @@ namespace IngameScript
             /// Construct the Message, by consuming all data stored in the queues.
             /// </summary>
             /// <returns></returns>
-            public string BuildMessage()
+            public string BuildMessage(ScriptState state)
             {
                 string result = "";
                 result += debugQueue.ConsumeAll();
-                result += statusBar.ComponentData();
+                if (config.ShowPlatformName) result += "Platform: " + config.MainTag + "\n";
+                result += indicatorBar.Build(config.STATEDATA[state].Text);
 
+                result += warningQueue.ConsumeAll();
                 result += infoQueue.ConsumeAll();
+
                 return result;
             }
 

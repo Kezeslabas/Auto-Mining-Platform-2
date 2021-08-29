@@ -23,6 +23,7 @@ namespace IngameScript
     partial class Program : MyGridProgram
     {
         readonly BlockManager BLOCKMANAGER = new BlockManager();
+        readonly StateManager STATEMANAGER = new StateManager();
 
         readonly MessageQueue DEBUGQUEUE = new MessageQueue("Debug");
 
@@ -34,9 +35,17 @@ namespace IngameScript
         public Program()
         {
             CONFIG = new ScriptConfig(DEBUGQUEUE);
+            SCREENMESSAGE = new ScreenMessage(DEBUGQUEUE,
+                                              CONFIG);
 
-            SCREENMESSAGE = new ScreenMessage(DEBUGQUEUE);
-            SCREENS = new ScreenManager(CONFIG, SCREENMESSAGE, GetMyScreen());
+            SCREENS = new ScreenManager(CONFIG, 
+                                        STATEMANAGER, 
+                                        SCREENMESSAGE, 
+                                        GetMyScreen());
+
+            BLOCKMANAGER.RegisterBlockConsumer(SCREENS);
+
+            STATEMANAGER.RegisterStateConsumer(SCREENS);
 
             RefreshBlocks();
             DisplayMessages();
@@ -61,7 +70,7 @@ namespace IngameScript
             DisplayMessages();
         }
 
-        public void RefreshBlocks()
+        private void RefreshBlocks()
         {
             BLOCKMANAGER.ClearAll();
 
@@ -70,13 +79,13 @@ namespace IngameScript
             BLOCKMANAGER.ConsumeAll();
         }
 
-        public void DisplayMessages()
+        private void DisplayMessages()
         {
             if(CONFIG.UpdateDetailedInfo)Echo(SCREENS.CurrentMessage());
             SCREENS.DisplayOnAll();
         }
 
-        public IMyTextSurface GetMyScreen()
+        private IMyTextSurface GetMyScreen()
         {
             return Me.SurfaceCount >= 1 ? Me.GetSurface(0) : null;
         }

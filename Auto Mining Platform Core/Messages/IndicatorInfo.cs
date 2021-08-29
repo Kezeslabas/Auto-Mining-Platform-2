@@ -23,17 +23,21 @@ namespace IngameScript
     partial class Program
     {
         /// <summary>
-        /// Shows an inidcator that updates each time the <c>ComponentData</c> method is called.
-        /// WIP: -Add Status Information
+        /// Shows an inidcator that updates each time the <c>Build</c> method is called.
+        /// It also display the provided text after the indicator.
         /// </summary>
-        public class StatusInfo
+        public class IndicatorInfo
         {
             private bool indicator = false;
 
-            public string ComponentData()
+            public string Build(string info)
             {
+                string result = indicator ? "[-/-/-/]" : "[/-/-/-]";
                 indicator = !indicator;
-                return indicator ? "[-/-/-/]" : "[/-/-/-]";
+
+                result += " " + info + "\n";
+
+                return result;
             }
         }
 

@@ -42,10 +42,10 @@ namespace IngameScript
 
             // Soft Vales
             private readonly string DISPLAY_SETTINGS = "Display Settings (Soft)";
-            public bool ShowPlatformName;
-            public bool LcdColorCoding;
-            public bool UpdateDetailedInfo;
-            public bool ShowAdvancedData ;
+            public bool ShowPlatformName; // - Done
+            public bool LcdColorCoding; // - Done
+            public bool UpdateDetailedInfo; // - Done
+            public bool ShowAdvancedData;
 
             // Hard values
             private readonly string TAG_SETTINGS = "Tag Settings (Hard)";
@@ -84,7 +84,7 @@ namespace IngameScript
 
             /// <summary>
             /// Load the values form the provided Custom Data.
-            /// If it is called as a context load, then a hard change will not be treated critical
+            /// If it is called as a context load, then a hard change will not be treated as critical change.
             /// </summary>
             /// <param name="customData"></param>
             /// <param name="isContextLoad"></param>

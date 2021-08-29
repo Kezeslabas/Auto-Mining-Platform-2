@@ -8,6 +8,7 @@
  */
 
 readonly BlockManager BLOCKMANAGER = new BlockManager();
+readonly StateManager STATEMANAGER = new StateManager();
 
 readonly MessageQueue DEBUGQUEUE = new MessageQueue("Debug");
 
@@ -19,9 +20,17 @@ readonly ScreenManager SCREENS;
 public Program()
 {
     CONFIG = new ScriptConfig(DEBUGQUEUE);
+    SCREENMESSAGE = new ScreenMessage(DEBUGQUEUE,
+                                      CONFIG);
 
-    SCREENMESSAGE = new ScreenMessage(DEBUGQUEUE);
-    SCREENS = new ScreenManager(CONFIG, SCREENMESSAGE, GetMyScreen());
+    SCREENS = new ScreenManager(CONFIG,
+                                STATEMANAGER,
+                                SCREENMESSAGE,
+                                GetMyScreen());
+
+    BLOCKMANAGER.RegisterBlockConsumer(SCREENS);
+
+    STATEMANAGER.RegisterStateConsumer(SCREENS);
 
     RefreshBlocks();
     DisplayMessages();
@@ -44,7 +53,7 @@ public void Main(string argument, UpdateType updateSource)
     DisplayMessages();
 }
 
-public void RefreshBlocks()
+private void RefreshBlocks()
 {
     BLOCKMANAGER.ClearAll();
 
@@ -53,13 +62,13 @@ public void RefreshBlocks()
     BLOCKMANAGER.ConsumeAll();
 }
 
-public void DisplayMessages()
+private void DisplayMessages()
 {
     if(CONFIG.UpdateDetailedInfo)Echo(SCREENS.CurrentMessage());
     SCREENS.DisplayOnAll();
 }
 
-public IMyTextSurface GetMyScreen()
+private IMyTextSurface GetMyScreen()
 {
     return Me.SurfaceCount >= 1 ? Me.GetSurface(0) : null;
 }
@@ -232,6 +241,21 @@ public void HardChangeString(ref string originalVal, MyIniValue iniVal)
     }
 }
 
+public class IndicatorInfo
+{
+    private bool indicator = false;
+
+    public string Build(string info)
+    {
+        string result = indicator ? "[-/-/-/]" : "[/-/-/-]";
+        indicator = !indicator;
+
+        result += " " + info + "\n";
+
+        return result;
+    }
+}
+
 public interface IMessageQueueAppender
 {
     void Append(string msg);
@@ -286,7 +310,7 @@ public class PlayerConfig : ConfigInitializer
     public bool ShowPlatformName;
     public bool LcdColorCoding;
     public bool UpdateDetailedInfo;
-    public bool ShowAdvancedData ;
+    public bool ShowAdvancedData;
 
     private readonly string TAG_SETTINGS = "Tag Settings (Hard)";
     public string VerTag;
@@ -387,22 +411,27 @@ public string BuildPlayerConfig()
     }
 }
 
-public class ScreenManager : IBlockConsumer
+public class ScreenManager : IBlockConsumer, IStateConsumer
 {
     private readonly ScriptConfig config;
+    private readonly IStateProvider stateProvider;
 
     private readonly HashSet<IMyTextSurface> displays = new HashSet<IMyTextSurface>();
 
     private readonly IMyTextSurface coreDisplay;
 
     private readonly TriggeredState messageCycle = new TriggeredState();
-    private string currentMessage;
+    private readonly TriggeredState stateChange = new TriggeredState();
 
     private readonly IScreenMessage screenMessage;
 
-    public ScreenManager(ScriptConfig config, IScreenMessage screenMessage ,IMyTextSurface coreDisplay)
+    private string currentMessage;
+
+    public ScreenManager(ScriptConfig config, IStateProvider stateProvider, IScreenMessage screenMessage ,IMyTextSurface coreDisplay)
     {
         this.config = config;
+        this.stateProvider = stateProvider;
+
         this.screenMessage = screenMessage;
         this.coreDisplay = coreDisplay;
         AddCoreDisplay();
@@ -412,19 +441,31 @@ public void DisplayOnAll()
     {
         CurrentMessage();
 
-        foreach (IMyTextSurface surface in displays)
+        if (stateChange.IsTriggered())
         {
-            surface.WriteText(currentMessage);
+            foreach (IMyTextSurface surface in displays)
+            {
+                SetDisplayColor(surface);
+                surface.WriteText(currentMessage);
+            }
+        }
+        else
+        {
+            foreach (IMyTextSurface surface in displays)
+            {
+                surface.WriteText(currentMessage);
+            }
         }
 
         messageCycle.Continue();
+        stateChange.Continue();
     }
 
 public string CurrentMessage()
     {
         if (messageCycle.IsTriggered()) return currentMessage;
 
-        currentMessage = screenMessage.BuildMessage();
+        currentMessage = screenMessage.BuildMessage(stateProvider.GetState());
 
         messageCycle.Trigger();
         return currentMessage;
@@ -456,7 +497,10 @@ public void ConsumeBlock(IMyTerminalBlock block)
 
     private void SetDisplayColor(IMyTextSurface textSurface)
     {
-        return;
+        if (config.LcdColorCoding)
+        {
+            textSurface.FontColor = config.STATEDATA[stateProvider.GetState()].Color;
+        }
     }
 
 private void AddDisplay(IMyTerminalBlock block)
@@ -499,25 +543,32 @@ private void AddDisplay(IMyTextSurface textSurface)
         SetDisplayColor(textSurface);
         displays.Add(textSurface);
     }
-}
 
+    public void ConsumeState(ScriptState state)
+    {
+        stateChange.Trigger();
+    }
+}
 public interface IScreenMessage
 {
     IMessageQueueAppender GetInfoQueueAppender();
     IMessageQueueAppender GetWarningQueueAppender();
-    string BuildMessage();
+    string BuildMessage(ScriptState state);
 }
 public class ScreenMessage : IScreenMessage
 {
+    private readonly ScriptConfig config;
+
     private readonly MessageQueue debugQueue;
-    private readonly StatusInfo statusBar = new StatusInfo();
+    private readonly IndicatorInfo indicatorBar = new IndicatorInfo();
 
     private readonly MessageQueue infoQueue = new MessageQueue("Info");
     private readonly MessageQueue warningQueue = new MessageQueue("Warning");
 
-    public ScreenMessage(MessageQueue debugQueue)
+    public ScreenMessage(MessageQueue debugQueue, ScriptConfig config)
     {
         this.debugQueue = debugQueue;
+        this.config = config;
     }
 
     public IMessageQueueAppender GetInfoQueueAppender()
@@ -530,34 +581,93 @@ public class ScreenMessage : IScreenMessage
         return warningQueue;
     }
 
-public string BuildMessage()
+public string BuildMessage(ScriptState state)
     {
         string result = "";
         result += debugQueue.ConsumeAll();
-        result += statusBar.ComponentData();
+        if (config.ShowPlatformName) result += "Platform: " + config.MainTag + "\n";
+        result += indicatorBar.Build(config.STATEDATA[state].Text);
 
+        result += warningQueue.ConsumeAll();
         result += infoQueue.ConsumeAll();
+
         return result;
     }
 
 }
 
+public enum ScriptState
+{
+    UNDEFINED,
+    INIT,
+    SET
+}
+
 public class ScriptConfig : PlayerConfig
 {
+    public readonly Dictionary<ScriptState, StateData> STATEDATA = new Dictionary<ScriptState, StateData>
+    {
+        { ScriptState.UNDEFINED,    new StateData(Color.Gray,          "Undefined State")   },
+        { ScriptState.INIT,         new StateData(Color.White,         "Initializing...")   },
+        { ScriptState.SET,          new StateData(Color.Magenta,       "Set")               },
+    };
+
     public ScriptConfig(IMessageQueueAppender debugQueue) : base(debugQueue)
     {
 
     }
 }
 
-public class StatusInfo
+public struct StateData
 {
-    private bool indicator = false;
+    public Color Color { get; }
+    public string Text { get; }
 
-    public string ComponentData()
+    public StateData(Color color, string text)
     {
-        indicator = !indicator;
-        return indicator ? "[-/-/-/]" : "[/-/-/-]";
+        Color = color;
+        Text = text;
+    }
+}
+
+public interface IStateProvider
+{
+    void SetState(ScriptState state);
+
+    ScriptState GetState();
+}
+
+public interface IStateConsumer
+{
+    void ConsumeState(ScriptState state);
+}
+
+
+public class StateManager : IStateProvider
+{
+    private readonly List<IStateConsumer> consumers = new List<IStateConsumer>();
+
+    private ScriptState state;
+
+    public ScriptState GetState()
+    {
+        return state;
+    }
+
+    public void SetState(ScriptState state)
+    {
+        this.state = state;
+        CallConsumers();
+    }
+
+    public void RegisterStateConsumer(IStateConsumer consumer)
+    {
+        consumers.Add(consumer);
+    }
+
+    private void CallConsumers()
+    {
+        consumers.ForEach(p => p.ConsumeState(state));
     }
 }
 

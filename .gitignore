@@ -5,7 +5,7 @@
 
 # Custom
 TestResult
-
+Deploy/**/*.png
 
 # User-specific files
 *.rsuser

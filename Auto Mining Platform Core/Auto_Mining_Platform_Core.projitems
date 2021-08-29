@@ -16,8 +16,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Config\ScriptConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\MessageQueue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\ScreenMessage.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Messages\StatusInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\IndicatorInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ScreenManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)State\StateManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Util\TriggeredState.cs" />
   </ItemGroup>
 </Project>
