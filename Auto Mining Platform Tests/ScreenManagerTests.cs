@@ -9,7 +9,8 @@ namespace Auto_Mining_Platform_Tests
     public class ScreenManagerTests
     {
         private readonly ScriptConfig dummyConfig = new ScriptConfig(new Mock<IMessageQueueAppender>().Object);
-        private readonly Mock<ScreenMessage> mockMessage = new Mock<ScreenMessage>(new Mock<MessageQueue>("Mock").Object);
+        private readonly Mock<IScreenMessage> mockMessage = new Mock<IScreenMessage>();
+        private readonly Mock<IStateProvider> mockStateProvider = new Mock<IStateProvider>();
 
         private ScreenManager screenManager;
 
@@ -22,14 +23,14 @@ namespace Auto_Mining_Platform_Tests
 
         private ScreenManager NewScreenManager(IMyTextSurface coreDisplay)
         {
-            return new ScreenManager(dummyConfig, mockMessage.Object, coreDisplay);
+            return new ScreenManager(dummyConfig, mockStateProvider.Object, mockMessage.Object, coreDisplay);
         }
 
         [TestMethod]
         public void Constructor_WhenNullCoreDisplayGiven_ThenNotAddedToDisplays()
         {
             // Act
-            screenManager = new ScreenManager(dummyConfig, mockMessage.Object, null);
+            screenManager = new ScreenManager(dummyConfig, mockStateProvider.Object, mockMessage.Object, null);
 
             // Assert
             Assert.AreEqual(0, screenManager.GetDisplayCount());
